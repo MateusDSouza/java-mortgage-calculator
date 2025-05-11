@@ -5,14 +5,12 @@ import java.text.NumberFormat;
 public class MortgageCalculator {
     static final int MONTHS_IN_YEAR = 12;
     static final int PERCENT = 100;
-    //Initialized
     private double principal;
     private float annualInterestRate;
     private int yearsOfPayment;
-    //Calculated
     private float monthlyInterest;
     private int monthsOfPayment;
-    private double monthlyPayment;
+    public double monthlyPayment;
 
     public MortgageCalculator(double principal, float annualInterestRate, int yearsOfPayment) {
         this.principal = principal;
@@ -63,7 +61,7 @@ public class MortgageCalculator {
         this.yearsOfPayment = yearsOfPayment;
     }
 
-    private int getMonthsOfPayment() {
+    int getMonthsOfPayment() {
         return monthsOfPayment;
     }
 
@@ -80,18 +78,13 @@ public class MortgageCalculator {
         setMonthsOfPayment(yearsOfPayment * MONTHS_IN_YEAR);
     }
 
-
-    private double calculateCoefficient() {
-        return Math.pow(1 + monthlyInterest, monthsOfPayment);
-    }
-
     private double calculateCoefficient(int monthsOfPaymentsDone) {
         return Math.pow(1 + monthlyInterest, monthsOfPaymentsDone);
     }
 
 
     private double calculateCoefficientRatio() {
-        return (monthlyInterest * calculateCoefficient()) / (calculateCoefficient() - 1);
+        return (monthlyInterest * calculateCoefficient(monthsOfPayment)) / (calculateCoefficient(monthsOfPayment) - 1);
     }
 
     private void calculateMonthlyPayment() {
@@ -99,23 +92,9 @@ public class MortgageCalculator {
                 calculateCoefficientRatio());
     }
 
-    private String formatMortgagePayment(double value) {
-        return NumberFormat.getCurrencyInstance().format(value);
+    double calculateRemainingLoanBalance(int monthsOfPaymentsDone) {
+        return principal * ((calculateCoefficient(monthsOfPayment) - calculateCoefficient(monthsOfPaymentsDone)) / (calculateCoefficient(monthsOfPayment) - 1));
     }
 
-    private double calculateRemainingLoanBalance(int monthsOfPaymentsDone) {
-        return principal * ((calculateCoefficient() - calculateCoefficient(monthsOfPaymentsDone)) / (calculateCoefficient() - 1));
-    }
 
-    public void outputMortgageDetails() {
-        System.out.println("\nMORTGAGE PAYMENT\n---------------- \n");
-        System.out.println(formatMortgagePayment(monthlyPayment));
-        System.out.println("\nPAYMENT SCHEDULE \n----------------");
-        for (int p = 1; p <= getMonthsOfPayment(); p++) {
-            double remainingLoanBalance =
-                    calculateRemainingLoanBalance(p);
-            System.out.println("Loan Balance after " + p + " months: "
-                    + formatMortgagePayment(remainingLoanBalance));
-        }
-    }
 }
